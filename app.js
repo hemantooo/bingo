@@ -71,6 +71,13 @@ function createGame() {
     displayRoomCode.textContent = roomCode;
     console.log('Room Created:', roomCode);
     
+    // Show game screen immediately to display the code to the host
+    showScreen('game');
+    turnText.textContent = "Waiting for opponent...";
+    turnIndicator.classList.remove('active');
+    turnIndicator.classList.add('opponent');
+    bingoGrid.classList.add('disabled');
+    
     // Waiting for connection
     peer.on('connection', (connection) => {
       conn = connection;
