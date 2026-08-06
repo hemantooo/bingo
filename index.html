@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Bingo</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- PeerJS -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Lobby Screen -->
+    <div id="lobby-screen" class="screen active">
+      <div class="glass-panel">
+        <h1 class="logo-title">BINGO<span class="dot">.</span></h1>
+        <p class="subtitle">Real-time 2-Player Game</p>
+        
+        <div class="lobby-actions">
+          <div class="action-card">
+            <h3>Start a New Game</h3>
+            <p>Generate a room code and invite a friend.</p>
+            <button id="btn-create" class="primary-btn">Create Game</button>
+            <div id="create-loading" class="hidden">Generating Room...</div>
+          </div>
+          
+          <div class="divider">
+            <span>OR</span>
+          </div>
+          
+          <div class="action-card">
+            <h3>Join an Existing Game</h3>
+            <p>Enter a 4-character room code.</p>
+            <div class="input-group">
+              <input type="text" id="join-input" placeholder="e.g. ABCD" maxlength="4" autocomplete="off">
+              <button id="btn-join" class="secondary-btn">Join</button>
+            </div>
+            <div id="join-error" class="error-text hidden">Invalid code or connection failed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen hidden">
+      <div class="game-header">
+        <div class="room-info">
+          <span class="label">Room Code:</span>
+          <span id="display-room-code" class="code-badge">----</span>
+        </div>
+        <div id="turn-indicator" class="turn-indicator">
+          <div class="turn-dot"></div>
+          <span id="turn-text">Waiting for opponent...</span>
+        </div>
+      </div>
+
+      <div class="bingo-board-container glass-panel">
+        <!-- BINGO Letters -->
+        <div class="bingo-letters">
+          <div class="letter" id="letter-0">B</div>
+          <div class="letter" id="letter-1">I</div>
+          <div class="letter" id="letter-2">N</div>
+          <div class="letter" id="letter-3">G</div>
+          <div class="letter" id="letter-4">O</div>
+        </div>
+        
+        <!-- The Grid -->
+        <div id="bingo-grid" class="bingo-grid disabled">
+          <!-- Cells injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="modal hidden">
+      <div class="modal-content glass-panel">
+        <h2 id="game-over-title">You Win!</h2>
+        <p id="game-over-message">You got 5 lines first.</p>
+        <button id="btn-play-again" class="primary-btn">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
