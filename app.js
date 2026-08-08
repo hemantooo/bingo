@@ -64,9 +64,22 @@ function createGame() {
   const roomCode = generateCode();
   const peerId = ROOM_PREFIX + roomCode;
   
-  peer = new Peer(peerId);
+  peer = new Peer(peerId, {
+    secure: true,
+    debug: 1
+  });
+
+  // Timeout if PeerJS cloud server doesn't respond
+  const createTimeout = setTimeout(() => {
+    console.error('PeerJS connection timed out');
+    peer.destroy();
+    alert('Connection to server timed out. Please try again.');
+    btnCreate.classList.remove('hidden');
+    createLoading.classList.add('hidden');
+  }, 10000);
   
   peer.on('open', (id) => {
+    clearTimeout(createTimeout);
     isHost = true;
     displayRoomCode.textContent = roomCode;
     console.log('Room Created:', roomCode);
@@ -86,8 +99,9 @@ function createGame() {
   });
 
   peer.on('error', (err) => {
-    console.error(err);
-    alert('Error creating game. Please try again.');
+    clearTimeout(createTimeout);
+    console.error('PeerJS error:', err.type, err);
+    alert('Error creating game: ' + err.type + '. Please try again.');
     btnCreate.classList.remove('hidden');
     createLoading.classList.add('hidden');
   });
@@ -102,10 +116,21 @@ function joinGame() {
   }
 
   const peerId = ROOM_PREFIX + code;
-  peer = new Peer();
+  peer = new Peer(undefined, {
+    secure: true,
+    debug: 1
+  });
+
+  // Timeout if PeerJS cloud server doesn't respond
+  const joinTimeout = setTimeout(() => {
+    console.error('PeerJS join timed out');
+    peer.destroy();
+    showJoinError('Connection timed out. Please try again.');
+  }, 10000);
   
   peer.on('open', () => {
-    conn = peer.connect(peerId);
+    clearTimeout(joinTimeout);
+    conn = peer.connect(peerId, { reliable: true });
     
     conn.on('open', () => {
       isHost = false;
@@ -114,13 +139,18 @@ function joinGame() {
     });
 
     conn.on('error', (err) => {
-      showJoinError('Connection failed.');
+      showJoinError('Connection failed: ' + err.type);
     });
   });
   
   peer.on('error', (err) => {
-    console.error(err);
-    showJoinError('Could not find room.');
+    clearTimeout(joinTimeout);
+    console.error('PeerJS error:', err.type, err);
+    if (err.type === 'peer-unavailable') {
+      showJoinError('Room not found. Check the code and try again.');
+    } else {
+      showJoinError('Could not connect: ' + err.type);
+    }
   });
 }
 
